@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Nunito&Kalam  -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* Typography */
+        .font-cute { font-family: 'Nunito', sans-serif; }
+        .font-handwritten { font-family: 'Kalam', cursive; }
+
+        /* Pastel Animated Gradient Bg */
+        body {
+            background: linear-gradient(-45deg, #fbc2eb, #a6c1ee, #fde4cf, #e0c3fc);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Bouncing Animation for Button */
+        @keyframes bounceSoft {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-bounce-soft {
+            animation: bounceSoft 2s infinite ease-in-out;
+        }
+
+        /* Float Animation Polaroid */
+        @keyframes floatCute {
+            0% { transform: translateY(0px) rotate(-3deg); }
+            50% { transform: translateY(-15px) rotate(-1deg); }
+            100% { transform: translateY(0px) rotate(-3deg); }
+        }
+        .animate-float-cute {
+            animation: floatCute 5s ease-in-out infinite;
+        }
+
+        /* Sakura Petal */
+        .sakura-petal {
+            position: fixed;
+            background: linear-gradient(135deg, #ffb7c5 0%, #ff8da1 100%);
+            border-radius: 15px 0px 15px 0px; /* petal shape */
+            opacity: 0.7;
+            pointer-events: none;
+            z-index: 0;
+            filter: drop-shadow(0 2px 4px rgba(255, 183, 197, 0.5));
+        }
+
+        @keyframes fallAndSway {
+            0% {
+                transform: translateY(-10vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(110vh) translateX(50px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* UI Transitions */
+        .fade-transition {
+            transition: opacity 1.2s ease-in-out, transform 1.2s ease-in-out;
+        }
+
+        /* Sparkle Element */
+        .sparkle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23fff"><path d="M12 0l2.5 8.5L23 11l-8.5 2.5L12 22l-2.5-8.5L1 11l8.5-2.5z"/></svg>');
+            pointer-events: none;
+            animation: twinkle 2s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body class="font-cute min-h-screen text-slate-700 relative">
+
+    <!-- Container for Sakura Petals -->
+    <div id="sakura-container" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <!-- INTRO SCREEN/CLIKC ME BUTTON -->
+    <div id="intro-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center fade-transition backdrop-blur-sm bg-white/20">
+        
+        <div class="text-center relative">
+            <!-- Sparkles around the btn -->
+            <div class="sparkle" style="top: -20px; left: -20px; animation-delay: 0s;"></div>
+            <div class="sparkle" style="top: 20px; right: -30px; animation-delay: 0.5s;"></div>
+            <div class="sparkle" style="bottom: -10px; left: 20px; animation-delay: 1s;"></div>
+
+            <p class="font-handwritten text-2xl md:text-3xl text-pink-600 mb-6 drop-shadow-sm">
+                I have a lil something for you...
+            </p>
+            
+            <button id="click-me-btn" class="animate-bounce-soft px-10 py-4 bg-white/80 backdrop-blur-md border-2 border-pink-300 text-pink-500 font-bold rounded-full text-xl shadow-[0_8px_30px_rgb(255,182,193,0.6)] hover:bg-pink-100 hover:scale-105 transition-all active:scale-95 flex items-center gap-2 mx-auto">
+                <span>Click Me!</span>
+            </button>
+        </div>
+    </div>
+
+
+    <!--  MAIN GREETING SCREEN -->
+    <div id="main-screen" class="min-h-screen w-full hidden opacity-0 scale-95 fade-transition relative z-10 flex flex-col items-center justify-center p-6 py-12 overflow-y-auto">
+        
+        <div class="max-w-2xl w-full flex flex-col items-center mt-10 md:mt-0">
+            
+            <!-- Polaroid Frame -->
+            <div class="bg-white p-4 pb-12 rounded-lg shadow-xl border border-gray-100 animate-float-cute relative max-w-[280px] sm:max-w-[320px] w-full mb-10 transform -rotate-2">
+                <!-- Cute Pin decoration on top of polaroid -->
+                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-pink-300 rounded-full shadow-md z-20 flex items-center justify-center">
+                    <div class="w-4 h-4 bg-pink-200 rounded-full inset-shadow"></div>
+                </div>
+                <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 w-1 h-6 bg-gray-400 z-10"></div>
+
+                <!-- Photo Container -->
+                <div class="aspect-[3/4] w-full overflow-hidden rounded bg-pink-50 relative">
+                    <img src="nika.jpg" alt="Photo" class="w-full h-full object-cover">
+                </div>
+                
+                <!-- Handwritten Caption -->
+                <p class="font-handwritten text-xl text-center text-gray-600 absolute bottom-3 w-full left-0 px-4">
+                    Happy Birthday Ce Nika!
+                </p>
+            </div>
+
+            <!-- Birthday Message Container -->
+            <div class="bg-white/60 backdrop-blur-lg border border-white/50 rounded-3xl p-8 shadow-lg text-center relative max-w-lg w-full">
+                
+                <!-- Sparkle decorations -->
+                <div class="sparkle text-pink-400" style="top: -10px; left: -10px;"></div>
+                <div class="sparkle text-blue-400" style="bottom: -10px; right: -10px;"></div>
+
+                <h1 class="font-handwritten text-4xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 mb-4 drop-shadow-sm">
+                    Selamat Menua muhehehe
+                </h1>
+                
+                <div class="space-y-4 text-gray-700 md:text-lg leading-relaxed">
+                    <p>
+                        Ciee nambah tua! 😜 Semoga di umur yang baru ini ce nika makin glowing, rezekinya makin lancar, dan gacha-nya selalu wangi muhehehe
+                    </p>
+                    <p>
+                        Makasih banget udah jadi temen yang dulu sering mabar, nongki-nongki. Tetap jadi orang yang ceria dan baik hati ya! Kurang-kurangin begadang nonton anime, jaga kesehatan nyak biar sylus ga sedi. Once again, happy birthday! lop yu 19 juta~
+                    </p>
+                </div>
+
+                <!-- Signature -->
+                <div class="mt-8">
+                    <p class="text-sm text-gray-500">Dari,</p>
+                    <p class="font-handwritten text-2xl text-pink-600 mt-2">Amloafer</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // generate sakura petals
+            const sakuraContainer = document.getElementById('sakura-container');
+            
+            function createPetal() {
+                const petal = document.createElement('div');
+                petal.classList.add('sakura-petal');
+                
+                // Randomize size
+                const size = Math.random() * 10 + 10; // 10px to 20px
+                petal.style.width = `${size}px`;
+                petal.style.height = `${size}px`;
+                
+                // Randomize starting position horizontally
+                petal.style.left = `${Math.random() * 100}vw`;
+                
+                // Randomize animation duration
+                const duration = Math.random() * 5 + 5; // 5s to 10s
+                petal.style.animation = `fallAndSway ${duration}s linear infinite`;
+                
+                // Randomize delay so they don't all fall at once initially
+                petal.style.animationDelay = `${Math.random() * 5}s`;
+                
+                sakuraContainer.appendChild(petal);
+                
+                // Remove petal after animation to prevent DOM overload, then create a new one
+                setTimeout(() => {
+                    petal.remove();
+                    createPetal();
+                }, duration * 1000);
+            }
+
+            // Create initial batch of petals
+            for (let i = 0; i < 30; i++) {
+                createPetal();
+            }
+
+            // intro transition
+            const btn = document.getElementById('click-me-btn');
+            const introScreen = document.getElementById('intro-screen');
+            const mainScreen = document.getElementById('main-screen');
+
+            btn.addEventListener('click', () => {
+                // Fade out intro
+                introScreen.style.opacity = '0';
+                introScreen.style.transform = 'scale(1.1)';
+                
+                // Fire pastel confetti immediately on click
+                firePastelConfetti();
+
+                setTimeout(() => {
+                    introScreen.classList.add('hidden');
+                    mainScreen.classList.remove('hidden');
+                    
+                    // Trigger reflow to ensure transition works
+                    void mainScreen.offsetWidth; 
+                    
+                    // Fade in main screen
+                    mainScreen.style.opacity = '1';
+                    mainScreen.style.transform = 'scale(1)';
+                    
+                    // Fire a second wave of confetti
+                    setTimeout(firePastelConfetti, 500);
+
+                }, 1000); // match transition duration
+            });
+
+            // pastel confetti
+            function firePastelConfetti() {
+                const duration = 4000;
+                const end = Date.now() + duration;
+
+                // Pastel colors
+                const colors = ['#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff', '#e0c3fc'];
+
+                (function frame() {
+                    confetti({
+                        particleCount: 5,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: colors,
+                        zIndex: 100
+                    });
+                    confetti({
+                        particleCount: 5,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: colors,
+                        zIndex: 100
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+            }
+        });
+    </script>
+</body>
+</html>
